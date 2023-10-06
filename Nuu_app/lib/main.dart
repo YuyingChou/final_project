@@ -69,10 +69,7 @@ class LoginPage extends StatelessWidget {
                         String password = passwordController.text;
 
                         var response = await http.post(
-                          Uri.parse('http://10.0.2.2:8800/api/login'),
-                          headers: <String, String>{
-                            'Content-Type': 'application/json; charset=UTF-8',
-                          },
+                          Uri.parse('http://10.0.2.2:8800/api/users/login'),
                           body: {
                             'username': username,
                             'password': password,

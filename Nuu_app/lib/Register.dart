@@ -15,7 +15,7 @@ class RegisterPage extends StatelessWidget {
     final String password = passwordController.text;
 
     Future<http.Response> createAlbum(String username, String email, String password) {
-      final String apiUrl = 'http://10.0.2.2:8800/api/register';
+      final String apiUrl = 'http://10.0.2.2:8800/api/users/register';
 
       final Map<String, dynamic> userData = {
         'username': username,
