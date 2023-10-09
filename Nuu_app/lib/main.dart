@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:nuu_app/Register.dart';
+import 'dart:convert';
+
 
 void main() => runApp(MaterialApp(home: LoginPage()));
 
@@ -67,40 +69,51 @@ class LoginPage extends StatelessWidget {
                       onPressed: () async {
                         String username = usernameController.text;
                         String password = passwordController.text;
+                        Future<http.Response> createAlbum(String username,String password) {
+                          final String apiUrl = 'http://10.0.2.2:8800/api/users/login';
 
-                        var response = await http.post(
-                          Uri.parse('http://10.0.2.2:8800/api/users/login'),
-                          body: {
+                          final Map<String, dynamic> userData = {
                             'username': username,
-                            'password': password,
-                          },
-                        );
-
-                        if (response.statusCode == 200) {
-                          // 登入成功
-                          Navigator.push(
-                            currentContext,
-                            MaterialPageRoute(builder: (context) => const HomePage()),
-                          );
-                        } else {
-                          // 登入失敗
-                          showDialog(
-                            context: currentContext,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('登入失敗'),
-                                content: const Text('請確認你的使用者名稱與密碼是否輸入正確'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: const Text('OK'),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              );
+                            'password': password
+                          };
+                          return http.post(
+                            Uri.parse(apiUrl),
+                            headers: <String, String>{
+                              'Content-Type': 'application/json; charset=UTF-8',
                             },
+                            body: jsonEncode(userData),
                           );
+                        }
+                        try {
+                          // 調用 createAlbum 函數發送 POST 請求
+                          final response = await createAlbum(username,password);
+                          if (response.statusCode == 200) {
+                            Navigator.push(
+                              currentContext,
+                              MaterialPageRoute(builder: (context) => const HomePage()),
+                            );
+                          } else {
+                            showDialog(
+                              context: currentContext,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('登入失敗'),
+                                  content: const Text('請確認你的使用者名稱與密碼是否輸入正確'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: const Text('OK'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        },
+                                    ),
+                                  ],
+                                );
+                                },
+                            );
+                          }
+                        } catch (e) {
+                          // 發生錯誤
+                          print('註冊失敗: $e');
                         }
                       },
                       child: const Text('登入'),

@@ -3,7 +3,7 @@ const User = require('../../models/User');
 const bcrypt = require('bcrypt');
 
 //register
-router.post('/register',async (req, res)=>{
+router.post('/register' ,async (req, res)=>{
     try {
         //generate a password
         const salt = await bcrypt.genSalt(10);
@@ -29,19 +29,22 @@ router.post('/login',async (req, res)=>{
     try {
         //find user
         const user = await User.findOne({username:req.body.username});
-        !user && res.status(400).json("使用者名稱或密碼錯誤!");
-
+        if(!user){
+            return res.status(400).json("使用者名稱或密碼錯誤!");
+        }  
         //validate password
         const vaildPassword = await bcrypt.compare(
             req.body.password,
             user.password
         );
-        !vaildPassword && res.status(400).json("使用者名稱或密碼錯誤!");
+        if (!vaildPassword) {
+            return res.status(400).json("使用者名稱或密碼錯誤!"); 
+        }
 
         //send response
-        res.status(200).json({_id:user._id, username: user.username});
+        return res.status(200).json({_id:user._id, username: user.username});
     } catch (err) {
-        res.status(400).json(err);
+        return res.status(400).json(err);
     }
 });
 module.exports = router;
