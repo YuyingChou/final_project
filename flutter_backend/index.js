@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const app = express();
 const userRoute = require('./routes/api/users');
+const uberListRoute = require('./routes/api/uberList');
 const cors = require('cors');
 
 dotenv.config();
@@ -21,6 +22,7 @@ mongoose
     .catch((err) => console.log(err));
 
 app.use("/api/users",userRoute);
+app.use("/api/uberList",uberListRoute);
 
 const PORT = process.env.PORT || 8800;
 

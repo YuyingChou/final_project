@@ -3,7 +3,7 @@ const User = require('../../models/User');
 const bcrypt = require('bcrypt');
 
 //register
-router.post('/register' ,async (req, res)=>{
+router.post('/register',async (req, res)=>{
     try {
         //generate a password
         const salt = await bcrypt.genSalt(10);
@@ -25,24 +25,23 @@ router.post('/register' ,async (req, res)=>{
 });
 
 //login
-router.post('/login',async (req, res)=>{
+router.post('/login', async (req, res) => {
     try {
         //find user
-        const user = await User.findOne({username:req.body.username});
-        if(!user){
+        const user = await User.findOne({ username: req.body.username });
+        if (!user) {
             return res.status(400).json("使用者名稱或密碼錯誤!");
-        }  
+        }
         //validate password
-        const vaildPassword = await bcrypt.compare(
+        const validPassword = await bcrypt.compare(
             req.body.password,
             user.password
         );
-        if (!vaildPassword) {
-            return res.status(400).json("使用者名稱或密碼錯誤!"); 
+        if (!validPassword) {
+            return res.status(400).json("使用者名稱或密碼錯誤!");
         }
-
         //send response
-        return res.status(200).json({_id:user._id, username: user.username});
+        return res.status(200).json({ _id: user._id, username: user.username });
     } catch (err) {
         return res.status(400).json(err);
     }
