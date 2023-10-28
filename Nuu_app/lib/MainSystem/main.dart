@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nuu_app/MainSystem/Login.dart';
 import 'package:nuu_app/ScooterUber/ScooterUber.dart';
-
+import 'package:nuu_app/trading_website/trading_website.dart';
+import 'package:nuu_app/RentHouse/RentHouse.dart';
 
 void main() async {
   //確認登入狀態
@@ -53,6 +54,26 @@ class HomePage extends StatelessWidget {
                 );
               },
               child: const Text('共乘系統'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // 在按下按鈕時導航到註冊頁面
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>trading_website()),
+                );
+              },
+              child: const Text('二手物交易&代訂教科書平台'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // 在按下按鈕時導航到註冊頁面
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>RentApp()),
+                );
+              },
+              child: const Text('租屋平台'),
             ),
           ],
         ),

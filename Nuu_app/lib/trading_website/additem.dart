@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:ex/trading_website/data.dart';
+import 'package:nuu_app/trading_website/data.dart';
 String selectedCategory = '';
 
 class additem extends StatefulWidget {

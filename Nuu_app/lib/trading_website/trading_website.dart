@@ -1,26 +1,26 @@
 import 'dart:io';
-import 'package:ex/trading_website/additem.dart';
-import 'package:ex/trading_website/data.dart';
-import 'package:ex/trading_website/p1.dart';
-import 'package:ex/trading_website/p2.dart';
-import 'package:ex/trading_website/p3.dart';
-import 'package:ex/trading_website/buy.dart';
+import 'package:nuu_app/trading_website/additem.dart';
+import 'package:nuu_app/trading_website/data.dart';
+import 'package:nuu_app/trading_website/p1.dart';
+import 'package:nuu_app/trading_website/p2.dart';
+import 'package:nuu_app/trading_website/p3.dart';
+import 'package:nuu_app/trading_website/buy.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
 StreamController<List<product>> dataStreamController = StreamController<List<product>>.broadcast();
 
 void main() {
-  Timer.periodic(Duration(seconds: 1), (Timer timer) {
+  Timer.periodic(const Duration(seconds: 1), (Timer timer) {
 
     dataStreamController.sink.add(newproduct);
   });
 
-  runApp(const MyApp());
+  runApp(const trading_website());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class trading_website extends StatelessWidget {
+  const trading_website({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

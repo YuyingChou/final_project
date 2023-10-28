@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ex/trading_website/data.dart';
+import 'package:nuu_app/trading_website/data.dart';
 
 final ValueNotifier<String> _msg = ValueNotifier('');
 int a=0,b=0;
