@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const app = express();
 const userRoute = require('./routes/api/users');
 const uberListRoute = require('./routes/api/uberList');
+const InfoRoute = require('./routes/api/Info');
 const cors = require('cors');
 
 dotenv.config();
@@ -23,6 +24,7 @@ mongoose
 
 app.use("/api/users",userRoute);
 app.use("/api/uberList",uberListRoute);
+app.use("/api/Info", InfoRoute);
 
 const PORT = process.env.PORT || 8800;
 
