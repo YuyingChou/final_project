@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:http/http.dart' as http;
-import 'main.dart';
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:nuu_app/MainSystem/Register.dart';
+import 'package:provider/provider.dart';
 
+import 'package:nuu_app/Providers/user_provider.dart';
+import 'dart:convert';
+import 'package:nuu_app/AccountServices/Register.dart';
+import 'Home.dart';
 
 void main() => runApp(MaterialApp(home: LoginPage()));
 
@@ -69,7 +70,7 @@ class LoginPage extends StatelessWidget {
                       String username = usernameController.text;
                       String password = passwordController.text;
 
-                      Future<http.Response> createAlbum(String username,String password) {
+                      Future<http.Response> postUserInfo(String username,String password) {
                         const String apiUrl = 'http://10.0.2.2:8800/api/users/login';
 
                         final Map<String, dynamic> userData = {
@@ -85,16 +86,54 @@ class LoginPage extends StatelessWidget {
                         );
                       }
                       try {
-                        // 調用 createAlbum 函數發送 POST 請求
-                        final response = await createAlbum(username,password);
+                        //傳送帳號密碼
+                        final response = await postUserInfo(username,password);
+                        //登入成功
                         if (response.statusCode == 200) {
-                          SharedPreferences prefs = await SharedPreferences.getInstance();
-                          await prefs.setBool('isLoggedIn', true);
+                          final jsonResponse = json.decode(response.body);
+                          final userId = jsonResponse['_id'];
+
+                          Future<http.Response> getUserInfo(String userId) async {
+                            String apiUrl = 'http://10.0.2.2:8800/api/users/user/$userId';
+
+                            final response = await http.get(
+                              Uri.parse(apiUrl),
+                              headers: <String, String>{
+                                'Content-Type': 'application/json; charset=UTF-8',
+                              },
+                            );
+                            return response;
+                          }
+                          //取得使用者信息
+                          final userInfoResponse = await getUserInfo(userId);
+                          //取得信息成功
+                          if (userInfoResponse.statusCode == 200) {
+                            final userInfo = json.decode(userInfoResponse.body);
+                            //更新狀態
+                            context.read<UserProvider>().setUser(
+                              userInfo['username'],
+                              userId,
+                              userInfo['email'],
+                              userInfo['studentId'],
+                              userInfo['Department'],
+                              userInfo['Year'],
+                              userInfo['gender'],
+                              userInfo['phoneNumber'],
+                            );
+
+                            Navigator.push(
+                              currentContext,
+                              MaterialPageRoute(builder: (context) => const MainPage()),
+                            );
+                          }
+                          Provider.of<UserProvider>(context, listen: false).setUserLoggedIn();
+
                           Navigator.push(
                             currentContext,
-                            MaterialPageRoute(builder: (context) => const HomePage()),
+                            MaterialPageRoute(builder: (context) => const MainPage()),
                           );
-                        } else {
+
+                        } else {  //登入失敗
                           showDialog(
                             context: currentContext,
                             builder: (BuildContext context) {
@@ -115,7 +154,7 @@ class LoginPage extends StatelessWidget {
                         }
                       } catch (e) {
                         // 發生錯誤
-                        print('註冊失敗: $e');
+                        print('登入失敗: $e');
                       }
                     },
                     child: const Text('登入'),

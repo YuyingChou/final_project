@@ -106,6 +106,20 @@ class _AddItemState extends State<additem> {
       ),
     );
 
+    final timeController = TextEditingController();
+    final time= TextField(
+      controller: timeController,
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(
+          borderSide: BorderSide(
+            width: 2.0, // 设置边框宽度
+          ),
+        ),
+        labelText: '可交易時間',
+        labelStyle: TextStyle(fontSize: 20),
+      ),
+    );
+
     final placeController = TextEditingController();
     final place= TextField(
       controller: placeController,
@@ -116,15 +130,6 @@ class _AddItemState extends State<additem> {
           ),
         ),
         labelText: '交易地點',
-        labelStyle: TextStyle(fontSize: 20),
-      ),
-    );
-
-    final timeController = TextEditingController();
-    final time= TextField(
-      controller: timeController,
-      decoration: const InputDecoration(
-        labelText: '可交易時間:',
         labelStyle: TextStyle(fontSize: 20),
       ),
     );
@@ -246,7 +251,7 @@ class _AddItemState extends State<additem> {
                             child: Container(
                               width: 150,
                               margin: const EdgeInsets.all(5),
-                              child: time,
+                              child: number,
                             ),
                           ),
                           Expanded(
@@ -260,21 +265,7 @@ class _AddItemState extends State<additem> {
                       ),
                     ),
                     Container(
-                      child: Row(
-                        children: [
-                            Container(
-                              margin: const EdgeInsets.all(5),
-                              child: time,
-                            ),
-                          Expanded(
-                            child: Container(
-                              width: 150,
-                              margin: const EdgeInsets.all(5),
-                              child: price,
-                            ),
-                          ),
-                        ],
-                      ),
+                      child: time,width: 400,margin: const EdgeInsets.all(10),
                     ),
                     Container(
                       child: place,width: 400,margin: const EdgeInsets.all(10),

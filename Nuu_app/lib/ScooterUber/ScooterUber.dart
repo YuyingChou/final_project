@@ -33,15 +33,11 @@ class UberListState extends State<UberList>{
     );
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = jsonDecode(response.body);
-
       final List<dynamic> data = responseData['data'];
 
-      List<UberItem> uberList = data.map((json) {
+      uberList = data.map((json) {
         return UberItem.fromJson(json);
       }).toList();
-      //測試
-      print('載入成功');
-      //
       setState(() {
         uberList = uberList;
       });

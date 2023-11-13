@@ -14,6 +14,11 @@ router.post('/register',async (req, res)=>{
             username: req.body.username,
             email: req.body.email,
             password: hashedPassword,
+            studentId: req.body.studentId,
+            Department: req.body.Department,
+            Year: req.body.Year,
+            gender: req.body.gender,
+            phoneNumber: req.body.phoneNumber
         });
 
         //save user and sned response
@@ -46,4 +51,39 @@ router.post('/login', async (req, res) => {
         return res.status(400).json(err);
     }
 });
+
+//get user information
+router.get('/user/:id', async (req, res) => {
+    try {
+      const userId = req.params.id;
+      const user = await User.findOne({ _id: userId }); 
+      if (user) {
+        return res.status(200).json(user);
+      } else {
+        return res.status(400).json({ message: '使用者不存在' });
+      }
+    } catch (err) {
+      return res.status(500).json({ message: '伺服器發生錯誤' });
+    }
+});
+
+//edit user profile
+router.put('/:id', async (req, res) => {
+    try {
+      const updatedUser = await User.findByIdAndUpdate(
+        req.params.id, 
+        req.body, 
+        { new: true }
+      );
+      if (!updatedUser) {
+        res.status(400).json({ message: '找不到此用户' });
+        return;
+      } 
+      res.status(200).json(updatedUser);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: '服务器错误' });
+    }
+});
+  
 module.exports = router;

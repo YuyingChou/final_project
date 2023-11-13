@@ -19,6 +19,29 @@ const UserSchema = new mongoose.Schema({
         require:true,
         min: 6,
     },
+    studentId:{
+        type: String,
+        require: true,
+        max: 10,
+        unique: true,
+    },
+    Department:{
+        type: String,
+        require: true,
+    },
+    Year:{
+        type: String,
+        require: true,
+    },
+    gender:{
+        type: String,
+        require: true,
+    },
+    phoneNumber:{
+        type: String,
+        require: true,
+        max: 11
+    }
 },{ timestamps: true }
 ); 
 
