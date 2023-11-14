@@ -1,27 +1,38 @@
 const mongoose = require('mongoose');
 
 const UberListSchema = new mongoose.Schema({
+    userId :{
+        type: String,
+        required: true,
+    },
+    anotherUserId: {
+        type: String,
+    },
+    reserved:{
+        type: Boolean,
+        required: true,
+    },
     startingLocation: {
         type: String,
-        require: true,
+        required: true,
         max: 20,
     },
     destination:{
         type: String,
-        require: true,
+        required: true,
         max: 20,
     },
     selectedDateTime:{
         type: Date,
-        require:true,
+        required:true,
     },
     wantToFindRide:{
         type: Boolean,
-        require:true,
+        required:true,
     },
     wantToOfferRide:{
         type: Boolean,
-        require:true,
+        required:true,
     },
 },{ timestamps: true }
 ); 

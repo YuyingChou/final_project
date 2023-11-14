@@ -6,6 +6,9 @@ router.post('/addUberList',async (req, res)=>{
     try {
         //create new uber list
         const newUberList = new UberList({
+            userId: req.body.userId,
+            anotherUserId: req.body.anotherUserId,
+            reserved: req.body.reserved,
             startingLocation: req.body.startingLocation,
             destination: req.body.destination,
             selectedDateTime: req.body.selectedDateTime,

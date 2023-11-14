@@ -65,6 +65,23 @@ class _RegisterPageState extends State<RegisterPage> {
         // 註冊成功
         final jsonResponse = json.decode(response.body);
         print('註冊成功，用戶 ID: ${jsonResponse['_id']}');
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              content: const Text('註冊成功!'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('回到登錄頁面'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(); //回到登錄頁面
+                  },
+                ),
+              ],
+            );
+          },
+        );
       } else {
         showDialog(
           context: context,

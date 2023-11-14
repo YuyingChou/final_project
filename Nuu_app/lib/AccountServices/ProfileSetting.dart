@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:nuu_app/Providers/user_provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 // import 'package:nuu_app/AccountServices/Register.dart';
 
 
@@ -92,6 +94,14 @@ class _ProfileSettingState extends State<ProfileSetting> {
       if (response.statusCode == 200) {
         final updatedUserData = jsonDecode(response.body);
         print('用户信息更新成功: $updatedUserData');
+        Fluttertoast.showToast(
+          msg: "更新成功",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.blue,
+          textColor: Colors.white,
+          fontSize: 16.0, //文本大小
+        );
       } else {
         print('用户信息更新失败: ${response.statusCode}');
       }

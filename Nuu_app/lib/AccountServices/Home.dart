@@ -27,10 +27,6 @@ class MainPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const Text(
-                '歡迎使用這個App!',
-                style: TextStyle(fontSize: 20),
-              ),
               const SizedBox(height: 20),
               // ElevatedButton(
               //   onPressed: () async {
@@ -50,7 +46,17 @@ class MainPage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => const UberList()),
                   );
                 },
-                child: const Text('共乘系統'),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.motorcycle_outlined),
+                    SizedBox(width: 30.0),
+                    Text(
+                      '共乘系統',
+                      style: TextStyle( fontSize: 18)
+                    ),
+                  ],
+                ),
               ),
               ElevatedButton(
                 onPressed: () {
