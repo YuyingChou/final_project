@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:nuu_app/Providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
-
 class AddUberList extends StatefulWidget {
   final VoidCallback? onItemAdded;
 
@@ -51,12 +50,13 @@ class _AddUberListState extends State<AddUberList> {
     }
     try {
       // 調用 postList 函數發送 POST 請求
-      final response = await postList(startingLocation, destination,selectedDateTime,wantToFindRide,wantToOfferRide);
+      final response = await postList(startingLocation, destination, selectedDateTime, wantToFindRide, wantToOfferRide);
 
       if (response.statusCode == 200) {
         // 上傳成功
         final jsonResponse = json.decode(response.body);
         print('上傳成功，清單 ID: ${jsonResponse['_id']}');
+        if (!context.mounted) return;
           showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -75,7 +75,7 @@ class _AddUberListState extends State<AddUberList> {
                     ),
                     onPressed: () {
                       Navigator.of(context).pop();
-                      Navigator.of(context).pop(true); //回到共乘頁面
+                      Navigator.of(context).pop(true); //回到清單頁面
                     },
                   ),
                 ],
@@ -147,7 +147,7 @@ class _AddUberListState extends State<AddUberList> {
                       });
                     },
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(wantToFindRide ? Colors.lightBlue[200] : Colors.grey[300]),
+                      backgroundColor: MaterialStateProperty.all(wantToFindRide ? Colors.orangeAccent[200] : Colors.grey[300]),
                     ),
                     child: const Text('找車搭',style: TextStyle(fontSize: 20)),
                   ),
@@ -160,7 +160,7 @@ class _AddUberListState extends State<AddUberList> {
                       });
                     },
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(wantToOfferRide ? Colors.lightBlue[200] : Colors.grey[300]),
+                      backgroundColor: MaterialStateProperty.all(wantToOfferRide ? Colors.orangeAccent[200] : Colors.grey[300]),
                     ),
                     child: const Text('提供座位',style: TextStyle(fontSize: 20)),
                   ),
@@ -169,8 +169,6 @@ class _AddUberListState extends State<AddUberList> {
             ],
           ),
         )
-
-
       ),
       bottomNavigationBar: BottomAppBar(
         child: ElevatedButton(
@@ -190,6 +188,7 @@ class _AddUberListState extends State<AddUberList> {
       firstDate: DateTime.now(),
       lastDate: DateTime(2101),
     );
+    if (!context.mounted) return;
     if (picked != null && picked != selectedDateTime) {
       final TimeOfDay? time = await showTimePicker(
         context: context,

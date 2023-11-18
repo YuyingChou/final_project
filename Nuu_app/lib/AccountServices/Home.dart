@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
 import '../RentHouse/RentHouse.dart';
-import '../ScooterUber/ScooterUber.dart';
+import '../ScooterUber/UberList.dart';
 import '../main.dart';
 import '../trading_website/trading_website.dart';
 import 'Login.dart';
@@ -43,7 +43,7 @@ class MainPage extends StatelessWidget {
                   // 在按下按鈕時導航到註冊頁面
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const UberList()),
+                    MaterialPageRoute(builder: (context) =>  const UberList()),
                   );
                 },
                 child: const Row(

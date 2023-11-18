@@ -5,9 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:nuu_app/Providers/user_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-// import 'package:nuu_app/AccountServices/Register.dart';
-
-
 class ProfileSetting extends StatefulWidget {
   const ProfileSetting({Key? key}) : super(key: key);
 

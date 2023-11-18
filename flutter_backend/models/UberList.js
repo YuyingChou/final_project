@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 
 const UberListSchema = new mongoose.Schema({
+    listId: {
+        type: String,
+    },
     userId :{
         type: String,
         required: true,

@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:nuu_app/AccountServices/Login.dart';
 import 'package:nuu_app/AccountServices/Home.dart';
 import 'package:nuu_app/Providers/user_provider.dart';
-import 'package:nuu_app/Providers/uberList_provider.dart';
+import 'package:nuu_app/Providers/ListOwner_provider.dart';
+import 'package:nuu_app/Providers/List_provider.dart';
 
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -23,7 +24,10 @@ class MyApp extends StatelessWidget {
           create: (context) => UserProvider(),
         ),
         ChangeNotifierProvider(
-          create: (context) => UberListProvider(),
+          create: (context) => ListOwnerProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ListProvider(),
         ),
       ],
       child: MaterialApp(

@@ -2,21 +2,28 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nuu_app/ScooterUber/AddUberList.dart';
+import 'package:nuu_app/ScooterUber/SearchBottomSheet.dart';
 import 'package:http/http.dart' as http;
 import 'detail_dialog.dart';
 
 void main() => runApp(const UberList());
 
 class UberList extends StatefulWidget {
-  const UberList({super.key});
+  final VoidCallback? onItemAdded;
+  final VoidCallback? onItemSearch;
+
+  const UberList({Key? key, this.onItemAdded, this.onItemSearch}) : super(key: key);
 
   @override
   UberListState createState() => UberListState();
+
+  static final GlobalKey<UberListState> uberListKey = GlobalKey<UberListState>();
 }
 
 class UberListState extends State<UberList>{
   List<UberItem> uberList = [];
 
+  List<UberItem> get getUberList => uberList;
   @override
   void initState() {
     super.initState();
@@ -28,6 +35,13 @@ class UberListState extends State<UberList>{
     //更新UI
     setState(() {
       uberList = updatedList;
+    });
+  }
+
+  Future<void> updateSearchResults(List<UberItem> searchResults) async {
+    // 更新UI
+    setState(() {
+      uberList = searchResults;
     });
   }
 
@@ -59,28 +73,9 @@ class UberListState extends State<UberList>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: UberList.uberListKey,
       appBar: AppBar(
         title: const Text('共乘系統'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AddUberList()),
-              ).then((result) {
-                if (result == true ){
-                  reloadList();
-                }
-              });
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-            },
-          ),
-        ],
       ),
       body: ListView.builder(
         itemCount: uberList.length,
@@ -88,31 +83,77 @@ class UberListState extends State<UberList>{
           final item = uberList[index];
           return Card(
             child: ListTile(
-              leading: const Icon(Icons.directions_car),
+              leading: Column(
+                children: [
+                  const SizedBox(height: 8,),
+                  const Icon(Icons.directions_car),
+                  Text(
+                    item.reserved ? "已預約" : "未預約",
+                    style: TextStyle(
+                      color: item.reserved ? Colors.green[900] : Colors.red[900],
+                    )
+                  ),
+                ],
+              ),
               title: Text('從 ${item.startingLocation} 到 ${item.destination}'),
               subtitle: Text('${DateFormat('yyyy-MM-dd HH:mm').format(item.selectedDateTime)} 出發'),
               trailing: Text(
                 item.wantToFindRide ? '找車搭乘' : '提供搭乘',
                 style: TextStyle(
-                color: item.wantToFindRide ? Colors.green[900] : Colors.lightBlue[900],
+                color: item.wantToFindRide ? Colors.orange[900] : Colors.lightBlue[900],
                 fontWeight: FontWeight.bold,
                 ),
               ),
-              onTap: (){
+              onTap: () async {
                 showDetailsDialog(context, item);
               },
             ),
           );
         }
-      )
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddUberList()),
+          ).then((result) {
+            if (result == true) {
+              reloadList();
+            }
+          });
+        },
+      ),
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) => const SingleChildScrollView(
+                    child: SearchBottomSheet(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
 class UberItem {
+  final String listId;
   final String userId;
-  final String anotherUserId;
-  final bool reserved;
+  late final String anotherUserId;
+  late final bool reserved;
   final String startingLocation;
   final String destination;
   final DateTime selectedDateTime;
@@ -120,6 +161,7 @@ class UberItem {
   final bool wantToOfferRide;
 
   UberItem({
+    required this.listId,
     required this.userId,
     required this.anotherUserId,
     required this.reserved,
@@ -131,6 +173,7 @@ class UberItem {
   });
   factory UberItem.fromJson(Map<String, dynamic> json) {
     return UberItem(
+      listId: json['_id'],
       userId: json['userId'],
       anotherUserId: json['anotherUserId'],
       reserved: json['reserved'],
@@ -141,5 +184,4 @@ class UberItem {
       wantToOfferRide: json['wantToOfferRide'],
     );
   }
-
 }

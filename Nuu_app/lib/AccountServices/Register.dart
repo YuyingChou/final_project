@@ -63,6 +63,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
       if (response.statusCode == 200) {
         // 註冊成功
+        if (!context.mounted) return;
         final jsonResponse = json.decode(response.body);
         print('註冊成功，用戶 ID: ${jsonResponse['_id']}');
         showDialog(
@@ -83,6 +84,7 @@ class _RegisterPageState extends State<RegisterPage> {
           },
         );
       } else {
+        if (!context.mounted) return;
         showDialog(
           context: context,
           builder: (BuildContext context) {
