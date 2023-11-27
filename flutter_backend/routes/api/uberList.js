@@ -14,6 +14,7 @@ router.post('/addUberList',async (req, res)=>{
             selectedDateTime: req.body.selectedDateTime,
             wantToFindRide: req.body.wantToFindRide,
             wantToOfferRide: req.body.wantToOfferRide,
+            notes: req.body.notes,
         });
 
         //save uberlist and sned response
@@ -91,10 +92,26 @@ router.get('/searchList', async (req, res) => {
     }
 });
 
+//search my list
+router.get('/searchMyList', async (req, res) => {
+    try {
+        //從query參數中獲取id
+        const userId = req.query.userId;
+        
+        const uberList = await UberList.find({userId : userId});
 
+        const responseData = {
+            success: true,
+            data: uberList
+        };
+        res.status(200).json(responseData);
+    } catch (err) {
+        res.status(400).json({ success: false, error: err.message });
+    }
+});
 
 //edit list 
-router.put('/updatedList/:id', async (req, res) => {
+router.put('/editList/:id', async (req, res) => {
     try {
       const editList = await UberList.findByIdAndUpdate(
         req.params.id, 
@@ -108,7 +125,22 @@ router.put('/updatedList/:id', async (req, res) => {
       res.status(200).json(editList);
     } catch (err) {
       console.error(err);
-      res.status(500).json({ message: '服务器错误' });
+      res.status(500).json({ message: '伺服器錯誤' });
+    }
+});
+
+//delete list
+router.delete('/deleteList/:id', async (req, res) => {
+    const listId = req.params.id;
+    try{
+        const deletedList = await UberList.findByIdAndDelete(listId);
+        if (!deletedList) {
+            return res.status(400).json({ message: '未找到要删除的項目' });
+        }
+        res.json({ message: '删除成功' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: '伺服器錯誤' });
     }
 });
 

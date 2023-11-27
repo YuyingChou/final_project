@@ -121,10 +121,10 @@ class LoginPage extends StatelessWidget {
                               userInfo['phoneNumber'],
                             );
 
-                            Navigator.push(
-                              currentContext,
-                              MaterialPageRoute(builder: (context) => const MainPage()),
-                            );
+                            // Navigator.push(
+                            //   currentContext,
+                            //   MaterialPageRoute(builder: (context) => const MainPage()),
+                            // );
                           }
                           Provider.of<UserProvider>(context, listen: false).setUserLoggedIn();
 

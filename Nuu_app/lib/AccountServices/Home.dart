@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:nuu_app/ScooterUber/UberListPage/UberList.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
 import '../RentHouse/RentHouse.dart';
-import '../ScooterUber/UberList.dart';
 import '../main.dart';
 import '../trading_website/trading_website.dart';
 import 'Login.dart';
@@ -28,16 +28,6 @@ class MainPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               const SizedBox(height: 20),
-              // ElevatedButton(
-              //   onPressed: () async {
-              //     context.read<UserProvider>().setUserLoggedOut();
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(builder: (context) => LoginPage()),
-              //     );
-              //   },
-              //   child: const Text('登出'),
-              // ),
               ElevatedButton(
                 onPressed: () {
                   // 在按下按鈕時導航到註冊頁面

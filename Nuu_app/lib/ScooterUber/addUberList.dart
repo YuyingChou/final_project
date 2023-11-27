@@ -20,12 +20,14 @@ class _AddUberListState extends State<AddUberList> {
 
   TextEditingController startingLocationController = TextEditingController();
   TextEditingController destinationController = TextEditingController();
+  TextEditingController notesController = TextEditingController();
 
   Future<void> addUberList() async {
     final String startingLocation = startingLocationController.text;
     final String destination = destinationController.text;
+    final String notes = notesController.text;
 
-    Future<http.Response> postList(String startingLocation, String destination, DateTime selectedDateTime,bool wantToFindRide,bool wantToOfferRide) {
+    Future<http.Response> postList(String startingLocation, String destination, DateTime selectedDateTime,bool wantToFindRide,bool wantToOfferRide, String notes) {
       const String apiUrl = 'http://10.0.2.2:8800/api/uberList/addUberList';
 
       final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -38,6 +40,7 @@ class _AddUberListState extends State<AddUberList> {
         'selectedDateTime': selectedDateTime.toIso8601String(),
         'wantToFindRide': wantToFindRide,
         'wantToOfferRide': wantToOfferRide,
+        'notes': notes,
       };
 
       return http.post(
@@ -50,7 +53,7 @@ class _AddUberListState extends State<AddUberList> {
     }
     try {
       // 調用 postList 函數發送 POST 請求
-      final response = await postList(startingLocation, destination, selectedDateTime, wantToFindRide, wantToOfferRide);
+      final response = await postList(startingLocation, destination, selectedDateTime, wantToFindRide, wantToOfferRide,notes);
 
       if (response.statusCode == 200) {
         // 上傳成功
@@ -165,6 +168,26 @@ class _AddUberListState extends State<AddUberList> {
                     child: const Text('提供座位',style: TextStyle(fontSize: 20)),
                   ),
                 ],
+              ),
+              const SizedBox(height: 16.0),
+              const Text(
+                '備註:',
+                style: TextStyle(fontSize: 20.0),
+              ),
+              SizedBox(
+                height: 100.0,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: TextField(
+                    style: const TextStyle(fontSize: 20),
+                    controller: notesController,
+                    decoration: const InputDecoration(
+                      hintText: '請填入至多100字的備註，可能包括安全帽需求、行車習慣等',
+                      hintMaxLines: 2,
+                    ),
+                    maxLines: null,
+                  ),
+                )
               ),
             ],
           ),

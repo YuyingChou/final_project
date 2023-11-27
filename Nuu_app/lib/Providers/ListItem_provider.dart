@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ListProvider extends ChangeNotifier{
+class ListItemProvider extends ChangeNotifier{
   String listId = '';
   String userId = '';
   String anotherUserId = '';
@@ -10,9 +10,10 @@ class ListProvider extends ChangeNotifier{
   DateTime selectedDateTime = DateTime.now();
   bool wantToFindRide = false;
   bool wantToOfferRide = false;
+  String notes = '';
 
   //點擊卡片時使用
-  void setList(String newListId, String newUserId, String newAnotherUserId, bool newReserved, String newStartingLocation,String newDestination, DateTime newSelectedDateTime, bool newWantToFindRide, bool newWantToOfferRide) {
+  void setList(String newListId, String newUserId, String newAnotherUserId, bool newReserved, String newStartingLocation,String newDestination, DateTime newSelectedDateTime, bool newWantToFindRide, bool newWantToOfferRide, String newNotes) {
     listId = newListId;
     userId = newUserId;
     anotherUserId = newAnotherUserId;
@@ -22,7 +23,7 @@ class ListProvider extends ChangeNotifier{
     selectedDateTime = newSelectedDateTime;
     wantToFindRide = newWantToFindRide;
     wantToOfferRide = newWantToOfferRide;
-
+    notes = newNotes;
     //notifyListeners();
   }
 

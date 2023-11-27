@@ -1,13 +1,14 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'UberList.dart';
+import 'package:provider/provider.dart';
+import 'package:nuu_app/Providers/UberList_provider.dart';
+
 
 class SearchBottomSheet extends StatefulWidget {
-  const SearchBottomSheet({Key? key, this.onItemSearch}) : super(key: key);
-
-  final VoidCallback? onItemSearch;
+  const SearchBottomSheet({super.key});
 
   @override
   _SearchBottomSheetState createState() => _SearchBottomSheetState();
@@ -15,6 +16,8 @@ class SearchBottomSheet extends StatefulWidget {
 }
 
 class _SearchBottomSheetState extends State<SearchBottomSheet> {
+  List<UberItem> uberList = [];
+
   DateTime selectedDateTime = DateTime.now();
   bool wantToFindRide = false;
   bool wantToOfferRide = false;
@@ -32,7 +35,7 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
     destinationController = TextEditingController();
   }
 
-  Future<void> search() async {
+  Future<void> search(BuildContext context) async {
     final String startingLocation = startingLocationController.text;
     final String destination = destinationController.text;
 
@@ -60,24 +63,26 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
 
     try {
       // 調用 searchList 函數發送 GET 請求
-      final response = await searchList(startingLocation, destination,
-          selectedDateTime, wantToFindRideChecked, wantToOfferRideChecked);
+      final response = await searchList(
+          startingLocation,
+          destination,
+          selectedDateTime,
+          wantToFindRideChecked,
+          wantToOfferRideChecked
+      );
 
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         final List<dynamic> data = responseData['data'];
-        print(data);
 
-        UberListState? uberListState = UberList.uberListKey.currentState;
-        if (uberListState != null) {
-          uberListState?.updateSearchResults(
-            data.map((json) {
-              return UberItem.fromJson(json);
-            }).toList(),
-          );
-        }
-        widget.onItemSearch?.call();
+        uberList = data.map((json) {
+          return UberItem.fromJson(json);
+        }).toList();
+
+        Provider.of<UberListProvider>(context, listen: false)
+            .setList(uberList);
+        Navigator.of(context).pop();
       } else {
         print('搜尋失敗: ${response.body}');
       }
@@ -167,7 +172,7 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
           const SizedBox(height: 16.0),
           ElevatedButton(
             onPressed: () {
-              search();
+              search(context);
             },
             child: const Text('開始搜尋', style: TextStyle(fontSize: 20)),
           ),
