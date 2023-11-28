@@ -232,7 +232,18 @@ Future<void> showDetailsDialog(BuildContext context, UberItem item) async {
                             textColor: Colors.white,
                             fontSize: 16.0, //文本大小
                           );
-                        } else{
+                        }
+                        if(context.read<ListItemProvider>().anotherUserId.isNotEmpty ){
+                          Fluttertoast.showToast(
+                            msg: "此清單已有人預約",
+                            toastLength: Toast.LENGTH_LONG,
+                            gravity: ToastGravity.BOTTOM,
+                            backgroundColor: Colors.blue,
+                            textColor: Colors.white,
+                            fontSize: 16.0, //文本大小
+                          );
+                        }
+                        else{
                           context.read<ListItemProvider>().setReserved(context.read<UserProvider>().userId, true);
                           editList(listId: item.listId);
                           Navigator.of(context).pop(true);
