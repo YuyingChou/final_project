@@ -24,9 +24,9 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
 
   TextEditingController startingLocationController = TextEditingController();
   TextEditingController destinationController = TextEditingController();
-
-  bool wantToFindRideChecked = false;
-  bool wantToOfferRideChecked = false;
+  //預設不選取checkbox，會將所有需求回傳
+  bool wantToFindRideChecked = true;
+  bool wantToOfferRideChecked = true;
 
   @override
   void initState() {
@@ -46,12 +46,26 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
         bool wantToFindRideChecked,
         bool wantToOfferRideChecked) {
       // 使用函數參數中的搜尋條件
-      String apiUrl = 'http://10.0.2.2:8800/api/uberList/searchList?'
-          'startingLocation=$startingLocation&'
-          'destination=$destination&'
-          'selectedDateTime=${selectedDateTime.toIso8601String()}&'
-          'wantToFindRide=$wantToFindRideChecked&'
-          'wantToOfferRide=$wantToOfferRideChecked';
+      String query = '';
+      if(startingLocationController.text.isNotEmpty){
+        query += 'startingLocation=$startingLocation&';
+      }
+
+      if (destinationController.text.isNotEmpty) {
+        query += 'destination=${destinationController.text}&';
+      }
+
+      query += 'selectedDateTime=${selectedDateTime.toIso8601String()}&';
+
+      if (wantToFindRideChecked == true && wantToOfferRideChecked == false) {
+        query += 'wantToFindRide=true&';
+      }
+
+      if (wantToOfferRideChecked == true && wantToFindRideChecked == false) {
+        query += 'wantToOfferRide=true&';
+      }
+
+      String apiUrl = 'http://10.0.2.2:8800/api/uberList/searchList?$query';
 
       return http.get(
         Uri.parse(apiUrl),
@@ -95,90 +109,97 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  style: const TextStyle(fontSize: 20),
-                  controller: startingLocationController,
-                  decoration: const InputDecoration(
-                    hintText: '出發地關鍵字',
+    return SingleChildScrollView(
+      child: Container(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            const SizedBox(height: 20.0),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    style: const TextStyle(fontSize: 20),
+                    controller: startingLocationController,
+                    decoration: const InputDecoration(
+                      hintText: '出發地關鍵字',
+                    ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: TextField(
-                  style: const TextStyle(fontSize: 20),
-                  controller: destinationController,
-                  decoration: const InputDecoration(
-                    hintText: '目的地關鍵字',
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: TextField(
+                    style: const TextStyle(fontSize: 20),
+                    controller: destinationController,
+                    decoration: const InputDecoration(
+                      hintText: '目的地關鍵字',
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16.0),
-          const Text('出發時間:', style: TextStyle(fontSize: 20)),
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Text(
-                  DateFormat('yyyy-MM-dd HH:mm').format(selectedDateTime),
-                  style: const TextStyle(fontSize: 20),
+              ],
+            ),
+            const SizedBox(height: 16.0),
+            const Text('出發時間:', style: TextStyle(fontSize: 20)),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    '${DateFormat('yyyy-MM-dd HH:mm').format(selectedDateTime)} 之後',
+                    style: const TextStyle(fontSize: 20),
+                  ),
                 ),
-              ),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    _selectDateTime(context);
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _selectDateTime(context);
+                    },
+                    child: const Text('選擇日期和時間', style: TextStyle(fontSize: 20)),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16.0),
+            Row(
+              children: <Widget>[
+                CheckboxForRide(
+                  onChanged: (value) {
+                    setState(() {
+                      wantToFindRideChecked = value!;
+                      wantToOfferRideChecked = false;
+                    });
                   },
-                  child: const Text('選擇日期和時間', style: TextStyle(fontSize: 20)),
                 ),
-              ),
-              const Text("之後"),
-            ],
-          ),
-          const SizedBox(height: 16.0),
-          Row(
-            children: <Widget>[
-              CheckboxForRide(
-                onChanged: (value) {
-                  setState(() {
-                    wantToFindRideChecked = value!;
-                    wantToOfferRideChecked = false;
-                  });
+                const SizedBox(width: 16.0),
+                const Text('我要找車搭乘', style: TextStyle(fontSize: 20)),
+                CheckboxForRide(
+                  onChanged: (value) {
+                    setState(() {
+                      wantToOfferRideChecked = value!;
+                      wantToFindRideChecked = false;
+                    });
+                  },
+                ),
+                const SizedBox(width: 16.0),
+                const Text('我要提供座位', style: TextStyle(fontSize: 20)),
+              ],
+            ),
+            const SizedBox(height: 16.0),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  search(context);
                 },
+                child: const Text('開始搜尋', style: TextStyle(fontSize: 20)),
               ),
-              const SizedBox(width: 16.0),
-              const Text('我要找車搭乘', style: TextStyle(fontSize: 20)),
-              CheckboxForRide(
-                onChanged: (value) {
-                  setState(() {
-                    wantToOfferRideChecked = value!;
-                    wantToFindRideChecked = false;
-                  });
-                },
-              ),
-              const SizedBox(width: 16.0),
-              const Text('我要提供座位', style: TextStyle(fontSize: 20)),
-            ],
-          ),
-          const SizedBox(height: 16.0),
-          ElevatedButton(
-            onPressed: () {
-              search(context);
-            },
-            child: const Text('開始搜尋', style: TextStyle(fontSize: 20)),
-          ),
-        ],
+            ),
+            const SizedBox(height: 16.0),
+          ],
+        ),
       ),
     );
+
   }
 
   Future<void> _selectDateTime(BuildContext context) async {

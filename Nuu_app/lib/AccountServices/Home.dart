@@ -22,7 +22,7 @@ class MainPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('主頁面'),
         ),
-        drawer: Menu(key: scaffoldKey),
+        endDrawer: Menu(key: scaffoldKey),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

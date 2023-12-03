@@ -4,7 +4,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:nuu_app/Providers/UberList_provider.dart';
-import 'package:nuu_app/Providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class EditUberList extends StatefulWidget {
@@ -24,6 +23,9 @@ class _EditUberListState extends State<EditUberList> {
   TextEditingController startingLocationController = TextEditingController();
   TextEditingController destinationController = TextEditingController();
   TextEditingController notesController = TextEditingController();
+  TextEditingController payTextController = TextEditingController();
+  int? payValue;
+  String? errorText;
 
   @override
   void initState() {
@@ -31,12 +33,14 @@ class _EditUberListState extends State<EditUberList> {
 
     final int index = widget.index;
     final item = context.read<UberListProvider>().uberList[index];
+    final String payText = item.pay.toString();
     startingLocationController = TextEditingController(text: item.startingLocation);
     destinationController = TextEditingController(text:  item.destination);
     selectedDateTime = item.selectedDateTime;
     wantToOfferRide = item.wantToOfferRide;
     wantToFindRide = item.wantToFindRide;
     notesController = TextEditingController(text: item.notes);
+    payTextController = TextEditingController(text: payText);
   }
 
   Future<void> editUberList(String listId) async {
@@ -54,6 +58,7 @@ class _EditUberListState extends State<EditUberList> {
         'wantToFindRide': wantToFindRide,
         'wantToOfferRide': wantToOfferRide,
         'notes': notes,
+        'pay': payValue
       };
 
       return http.put(
@@ -102,23 +107,39 @@ class _EditUberListState extends State<EditUberList> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                TextField(
-                  style: const TextStyle(fontSize: 20),
-                  controller: startingLocationController,
-                  decoration: const InputDecoration(
-                    hintText: '出發地',
-                  ),
+                Row(
+                  children: [
+                    const Text(
+                      '出發地：',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        style: const TextStyle(fontSize: 20),
+                        controller: startingLocationController,
+                      ),
+                    )
+                  ],
                 ),
                 const SizedBox(height: 16.0),
-                TextField(
-                  style: const TextStyle(fontSize: 20),
-                  controller: destinationController,
-                  decoration: const InputDecoration(
-                      hintText: '目的地'
-                  ),
+                Row(
+                  children: [
+                    const Text(
+                      '目的地：',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        style: const TextStyle(fontSize: 20),
+                        controller: destinationController,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 16.0),
-                const Text('出發時間:',style: TextStyle(fontSize: 20)),
+                const Text('出發時間：',style: TextStyle(fontSize: 20)),
                 Row(
                   children: <Widget>[
                     Expanded(
@@ -166,8 +187,51 @@ class _EditUberListState extends State<EditUberList> {
                   ],
                 ),
                 const SizedBox(height: 16.0),
+                Row(
+                  children: [
+                    const Text(
+                      '報酬：',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    Expanded(
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        style: const TextStyle(fontSize: 20),
+                        controller: payTextController,
+                        onChanged: (value) {
+                          try {
+                            int intValue = int.parse(value);
+                            if (isValid(intValue)) {
+                              setState(() {
+                                errorText = null;
+                              });
+                            } else {
+                              setState(() {
+                                errorText = '請輸入正整數';
+                              });
+                            }
+                          } catch (e) {
+                            setState(() {
+                              errorText = '請輸入有效的整數';
+                            });
+                          }
+                        },
+                        decoration: InputDecoration(
+                          errorText: errorText,
+                        ),
+                      ),
+                    ),
+                    const Expanded(
+                        child: Text(
+                          'NT\$',
+                          style: TextStyle(fontSize: 20),
+                        )
+                    )
+                  ],
+                ),
+                const SizedBox(height: 16.0),
                 const Text(
-                  '備註:',
+                  '備註：',
                   style: TextStyle(fontSize: 20.0),
                 ),
                 SizedBox(
@@ -192,6 +256,23 @@ class _EditUberListState extends State<EditUberList> {
       bottomNavigationBar: BottomAppBar(
         child: ElevatedButton(
           onPressed: () async {
+            if (payTextController.text.isNotEmpty) {
+              int? parsedValue = int.tryParse(payTextController.text);
+              if (parsedValue != null && parsedValue >= 0) {
+                // 輸入是有效的正整數
+                payValue = parsedValue;
+              } else {
+                Fluttertoast.showToast(
+                  msg: "報酬請輸入有效的正整數",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  backgroundColor: Colors.blue,
+                  textColor: Colors.white,
+                  fontSize: 16.0,
+                );
+                return; // 不執行 addUberList
+              }
+            }
             await editUberList(listId);
             Navigator.of(context).pop(true);
           },
@@ -200,7 +281,9 @@ class _EditUberListState extends State<EditUberList> {
       ),
     );
   }
-
+  bool isValid(int value) {
+    return (value > 0);
+  }
   Future<void> _selectDateTime(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,

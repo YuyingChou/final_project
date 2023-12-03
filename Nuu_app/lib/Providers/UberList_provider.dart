@@ -11,6 +11,7 @@ class UberItem {
   final bool wantToFindRide;
   final bool wantToOfferRide;
   final String notes;
+  final int pay;
 
   UberItem({
     required this.listId,
@@ -22,7 +23,8 @@ class UberItem {
     required this.selectedDateTime,
     required this.wantToFindRide,
     required this.wantToOfferRide,
-    required this.notes
+    required this.notes,
+    required this.pay
   });
 
   factory UberItem.fromJson(Map<String, dynamic> json) {
@@ -37,6 +39,7 @@ class UberItem {
       wantToFindRide: json['wantToFindRide'],
       wantToOfferRide: json['wantToOfferRide'],
       notes: json['notes'],
+      pay: json['pay']
     );
   }
 }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:nuu_app/ScooterUber/UberListPage/MyUberList.dart';
+import '../../AccountServices/menu.dart';
+import '../../main.dart';
 import 'allUberList.dart';
+import 'myReservedList.dart';
 
 void main() {
   runApp(const UberList());
@@ -23,6 +26,7 @@ class _UberListState extends State<UberList> {
       appBar: AppBar(
         title: const Text('共乘系統'),
       ),
+      endDrawer: Menu(key: scaffoldKey),
       body: Column(
         children: [
           Row(
@@ -36,7 +40,16 @@ class _UberListState extends State<UberList> {
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
                     );
+                    setState(() {
+                      _currentIndex = 0;
+                    });
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _currentIndex == 0 ? Colors.blue[100] : null,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.zero,
+                    )
+                  ),
                   child: const Text('所有清單'),
                 ),
               ),
@@ -48,8 +61,38 @@ class _UberListState extends State<UberList> {
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
                     );
+                    setState(() {
+                      _currentIndex = 1;
+                    });
                   },
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: _currentIndex == 1 ? Colors.blue[100] : null,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                      )
+                  ),
                   child: const Text('我的清單'),
+                ),
+              ),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    _pageController.animateToPage(
+                      2,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                    setState(() {
+                      _currentIndex = 2;
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: _currentIndex == 2 ? Colors.blue[100] : null,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                      )
+                  ),
+                  child: const Text('已預約行程'),
                 ),
               ),
             ],
@@ -66,9 +109,11 @@ class _UberListState extends State<UberList> {
                 Container(
                   child: AllUberList(),
                 ),
-                // Use the updated AllUberList widget
                 Container(
                   child: MyUberList(),
+                ),
+                Container(
+                  child: MyReservedList()
                 ),
               ],
             ),

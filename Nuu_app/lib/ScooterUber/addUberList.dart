@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:nuu_app/Providers/user_provider.dart';
@@ -21,6 +22,10 @@ class _AddUberListState extends State<AddUberList> {
   TextEditingController startingLocationController = TextEditingController();
   TextEditingController destinationController = TextEditingController();
   TextEditingController notesController = TextEditingController();
+  TextEditingController payTextController = TextEditingController();
+  int? payValue;
+  //輸入錯誤格式的金額的錯誤訊息
+  String? errorText;
 
   Future<void> addUberList() async {
     final String startingLocation = startingLocationController.text;
@@ -41,6 +46,7 @@ class _AddUberListState extends State<AddUberList> {
         'wantToFindRide': wantToFindRide,
         'wantToOfferRide': wantToOfferRide,
         'notes': notes,
+        'pay': payValue
       };
 
       return http.post(
@@ -106,23 +112,39 @@ class _AddUberListState extends State<AddUberList> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              TextField(
-                style: const TextStyle(fontSize: 20),
-                controller: startingLocationController,
-                decoration: const InputDecoration(
-                  hintText: '出發地',
-                ),
+              Row(
+                children: [
+                  const Text(
+                    '出發地：',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                      child: TextField(
+                        style: const TextStyle(fontSize: 20),
+                        controller: startingLocationController,
+                      ),
+                  )
+                ],
               ),
               const SizedBox(height: 16.0),
-              TextField(
-                style: const TextStyle(fontSize: 20),
-                controller: destinationController,
-                decoration: const InputDecoration(
-                    hintText: '目的地'
-                ),
+              Row(
+                children: [
+                  const Text(
+                    '目的地：',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                      child: TextField(
+                        style: const TextStyle(fontSize: 20),
+                        controller: destinationController,
+                      ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16.0),
-              const Text('出發時間:',style: TextStyle(fontSize: 20)),
+              const Text('出發時間：',style: TextStyle(fontSize: 20)),
               Row(
                 children: <Widget>[
                   Expanded(
@@ -170,8 +192,51 @@ class _AddUberListState extends State<AddUberList> {
                 ],
               ),
               const SizedBox(height: 16.0),
+              Row(
+                children: [
+                  const Text(
+                    '報酬：',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  Expanded(
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        style: const TextStyle(fontSize: 20),
+                        controller: payTextController,
+                        onChanged: (value) {
+                          try {
+                            int intValue = int.parse(value);
+                            if (isValid(intValue)) {
+                              setState(() {
+                                errorText = null;
+                              });
+                            } else {
+                              setState(() {
+                                errorText = '請輸入正整數';
+                              });
+                            }
+                          } catch (e) {
+                            setState(() {
+                              errorText = '請輸入有效的整數';
+                            });
+                          }
+                        },
+                        decoration: InputDecoration(
+                          errorText: errorText,
+                        ),
+                      ),
+                  ),
+                  const Expanded(
+                      child: Text(
+                        'NT\$',
+                        style: TextStyle(fontSize: 20),
+                      )
+                  )
+                ],
+              ),
+              const SizedBox(height: 16.0),
               const Text(
-                '備註:',
+                '備註：',
                 style: TextStyle(fontSize: 20.0),
               ),
               SizedBox(
@@ -195,13 +260,34 @@ class _AddUberListState extends State<AddUberList> {
       ),
       bottomNavigationBar: BottomAppBar(
         child: ElevatedButton(
-          onPressed: () {
-            addUberList();
+          onPressed: () async {
+            if (payTextController.text.isNotEmpty) {
+              int? parsedValue = int.tryParse(payTextController.text);
+              if (parsedValue != null && parsedValue >= 0) {
+                // 輸入是有效的正整數
+                payValue = parsedValue;
+              } else {
+                Fluttertoast.showToast(
+                  msg: "報酬請輸入有效的正整數",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  backgroundColor: Colors.blue,
+                  textColor: Colors.white,
+                  fontSize: 16.0,
+                );
+                return; // 不執行 addUberList
+              }
+            }
+            await addUberList();
           },
           child: const Text('確定',style: TextStyle(fontSize: 20)),
         ),
       ),
     );
+  }
+
+  bool isValid(int value) {
+    return (value > 0);
   }
 
   Future<void> _selectDateTime(BuildContext context) async {

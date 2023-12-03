@@ -122,7 +122,11 @@ class AllUberListState extends State<AllUberList> {
                                 ),
                               ),
                               onTap: () async {
-                                showDetailsDialog(context, item);
+                                showDetailsDialog(context, item).then((result) {
+                                  if( result == true){
+                                    Future.microtask(() => loadCards(context));
+                                  }
+                                });
                               },
                             ),
                           );
@@ -134,30 +138,31 @@ class AllUberListState extends State<AllUberList> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      FloatingActionButton(
-                        child: const Icon(Icons.add),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const AddUberList()),
-                          ).then((result) {
-                            if (result == true) {
-                              loadCards(context);
-                            }
-                          });
-                        },
-                      ),
+                      // FloatingActionButton(
+                      //   child: const Icon(Icons.add),
+                      //   onPressed: () {
+                      //     Navigator.push(
+                      //       context,
+                      //       MaterialPageRoute(
+                      //           builder: (context) => const AddUberList()),
+                      //     ).then((result) {
+                      //       if (result == true) {
+                      //         loadCards(context);
+                      //       }
+                      //     });
+                      //   },
+                      // ),
                       BottomAppBar(
                         shape: const CircularNotchedRectangle(),
                         child: Row(
                           mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
                             IconButton(
                               icon: const Icon(Icons.search),
                               onPressed: () {
                                 showModalBottomSheet(
+                                  isScrollControlled: true,
                                   context: context,
                                   builder: (context) =>
                                       const SearchBottomSheet(),

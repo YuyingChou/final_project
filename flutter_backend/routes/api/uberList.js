@@ -15,6 +15,7 @@ router.post('/addUberList',async (req, res)=>{
             wantToFindRide: req.body.wantToFindRide,
             wantToOfferRide: req.body.wantToOfferRide,
             notes: req.body.notes,
+            pay: req.body.pay
         });
 
         //save uberlist and sned response
@@ -99,6 +100,24 @@ router.get('/searchMyList', async (req, res) => {
         const userId = req.query.userId;
         
         const uberList = await UberList.find({userId : userId});
+
+        const responseData = {
+            success: true,
+            data: uberList
+        };
+        res.status(200).json(responseData);
+    } catch (err) {
+        res.status(400).json({ success: false, error: err.message });
+    }
+});
+
+//search my reserved list
+router.get('/searchMyReservedList', async (req, res) => {
+    try {
+        //從query參數中獲取id
+        const anotherUserId = req.query.anotherUserId;
+        
+        const uberList = await UberList.find({anotherUserId : anotherUserId});
 
         const responseData = {
             success: true,

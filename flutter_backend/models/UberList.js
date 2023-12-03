@@ -37,6 +37,10 @@ const UberListSchema = new mongoose.Schema({
         type: Boolean,
         required:true,
     },
+    pay: {
+        type: Number,
+        required: true,
+    },
     notes: {
         type: String,
         max: 100

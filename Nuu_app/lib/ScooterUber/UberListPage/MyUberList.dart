@@ -21,8 +21,8 @@ class MyUberList extends StatefulWidget {
   @override
   MyUberListState createState() => MyUberListState();
 
-  static final GlobalKey<MyUberListState> uberListKey =
-      GlobalKey<MyUberListState>();
+  // static final GlobalKey<MyUberListState> uberListKey =
+  //     GlobalKey<MyUberListState>();
 }
 
 class MyUberListState extends State<MyUberList> {
@@ -66,6 +66,7 @@ class MyUberListState extends State<MyUberList> {
       throw Exception('載入失敗');
     }
   }
+
 
   Future<void> onDelete(BuildContext context, listId, index) async {
     String apiUrl = 'http://10.0.2.2:8800/api/uberList/deleteList/$listId';
@@ -190,13 +191,20 @@ class MyUberListState extends State<MyUberList> {
                                           context: context,
                                           builder: (BuildContext context) {
                                             return AlertDialog(
-                                              content: const Text("確認刪除？"),
+                                              content: item.reserved == true ?
+                                              const Text(
+                                                '已經有人預約了你的行程，你確定要刪除嗎?',
+                                                style: TextStyle(fontSize: 18),
+                                              ) :
+                                              const Text(
+                                                '確認刪除？'
+                                              ),
                                               actions: [
                                                 TextButton(
                                                   onPressed: () async {
                                                     await onDelete(context, item.listId, index);
                                                   },
-                                                  child: const Text("確認刪除"),
+                                                  child: const Text('確認刪除'),
                                                 ),
                                                 TextButton(
                                                   onPressed: () {
